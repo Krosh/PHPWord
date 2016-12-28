@@ -90,7 +90,7 @@ abstract class AbstractRenderer extends HTML
         } else {
             // @codeCoverageIgnoreStart
             // Can't find any test case. Uncomment when found.
-            throw new Exception('Unable to load PDF Rendering library');
+//            throw new Exception('Unable to load PDF Rendering library');
             // @codeCoverageIgnoreEnd
         }
     }
