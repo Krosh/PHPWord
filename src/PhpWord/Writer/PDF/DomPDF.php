@@ -49,7 +49,7 @@ class DomPDF extends AbstractRenderer implements WriterInterface
         $orientation = 'portrait';
 
         //  Create PDF
-        $pdf = new \DOMPDF();
+        $pdf = new \Dompdf\Dompdf();
         $pdf->set_paper(strtolower($paperSize), $orientation);
         $pdf->load_html($this->getContent());
         $pdf->render();
