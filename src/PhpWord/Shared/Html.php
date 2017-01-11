@@ -378,7 +378,7 @@ class Html
         return $styles;
     }
     
-    **
+    /**
      * Parse image node
      *
      * @param \DOMNode $node
