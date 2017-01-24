@@ -36,11 +36,17 @@ class Image extends AbstractStyle
             return '';
         }
         $css = array();
+      $hpos = $style->getHPos();
 
-        $width = $style->getWidth();
-        $height = $style->getHeight();
-        $css['width'] = $this->getValueIf(is_numeric($width), $width . 'px');
-        $css['height'] = $this->getValueIf(is_numeric($height), $height . 'px');
+      $width = $style->getWidth();
+      $height = $style->getHeight();
+      $css['width'] = $this->getValueIf(is_numeric($width), $width . 'px');
+      $css['height'] = $this->getValueIf(is_numeric($height), $height . 'px');
+      if ($hpos != "left")
+      {
+          $css["margin-top"] = -$height . 'px';
+          $css["float"] = $hpos;
+      }
 
         return $this->assembleCss($css);
     }
