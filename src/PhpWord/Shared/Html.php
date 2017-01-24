@@ -118,6 +118,7 @@ class Html
             'h5'        => array('Heading',     null,   $element,   $styles,    null,   'Heading5',     null),
             'h6'        => array('Heading',     null,   $element,   $styles,    null,   'Heading6',     null),
             '#text'     => array('Text',        $node,  $element,   $styles,    null,   null,           null),
+            'span'      => array('Span',        $node,  null,       $styles,    null,    null,          null), //to catch inline span style changes
             'strong'    => array('Property',    null,   null,       $styles,    null,   'bold',         true),
             'b'         => array('Property',    null,   null,       $styles,    null,   'bold',         true),
             'em'        => array('Property',    null,   null,       $styles,    null,   'italic',       true),
@@ -125,6 +126,7 @@ class Html
             'sup'       => array('Property',    null,   null,       $styles,    null,   'superScript',  true),
             'sub'       => array('Property',    null,   null,       $styles,    null,   'subScript',    true),
             'table'     => array('Table',       $node,  $element,   $styles,    null,   'addTable',     true),
+            'tbody'     => array('Table',       $node,  $element,   $styles,    null,   'skipTbody',    true), //added to catch tbody in html.
             'tr'        => array('Table',       $node,  $element,   $styles,    null,   'addRow',       true),
             'td'        => array('Table',       $node,  $element,   $styles,    null,   'addCell',      true),
             'ul'        => array('List',        null,   null,       $styles,    $data,  3,              null),
@@ -180,6 +182,18 @@ class Html
             $cNodes = $node->childNodes;
             if (count($cNodes) > 0) {
                 foreach ($cNodes as $cNode) {
+
+
+                    // Added to get tables to work
+                    $htmlContainers = array(
+                        'tbody',
+                        'tr',
+                        'td',
+                    );
+                    if (in_array( $cNode->nodeName, $htmlContainers ) ) {
+                        self::parseNode($cNode, $element, $styles, $data);
+                    }
+
                     if ($element instanceof AbstractContainer) {
                         self::parseNode($cNode, $element, $styles, $data);
                     }
@@ -272,9 +286,22 @@ class Html
      */
     private static function parseTable($node, $element, &$styles, $argument1)
     {
-        $styles['paragraph'] = self::parseInlineStyle($node, $styles['paragraph']);
+        switch ($argument1) {
+            case 'addTable':
+                $styles['paragraph'] = self::parseInlineStyle($node, $styles['paragraph']);
 
-        $newElement = $element->$argument1();
+                $newElement = $element->addTable('table', array('width' => 90));
+                break;
+            case 'skipTbody':
+                $newElement = $element;
+                break;
+            case 'addRow':
+                $newElement = $element->addRow();
+                break;
+            case 'addCell':
+                $newElement = $element->addCell(1750);
+                break;
+        }
 
         // $attributes = $node->attributes;
         // if ($attributes->getNamedItem('width') !== null) {
@@ -340,6 +367,22 @@ class Html
     }
 
     /**
+     * Parse span
+     *
+     * Changes the inline style when a Span element is found.
+     *
+     * @param type $node
+     * @param type $element
+     * @param array $styles
+     * @return type
+     */
+    private static function parseSpan($node, &$styles)
+    {
+        $styles['font'] = self::parseInlineStyle($node, $styles['font']);
+        return null;
+    }
+
+    /**
      * Parse style
      *
      * @param \DOMAttr $attribute
@@ -366,6 +409,9 @@ class Html
                 case 'text-align':
                     $styles['alignment'] = $cValue; // todo: any mapping?
                     break;
+                case 'font-size':
+                    $styles['size'] = substr( $cValue, 0, -2); // substr used to remove the px from the html string size string
+                    break;
                 case 'color':
                     $styles['color'] = trim($cValue, "#");
                     break;
@@ -377,7 +423,7 @@ class Html
 
         return $styles;
     }
-    
+
     /**
      * Parse image node
      *
