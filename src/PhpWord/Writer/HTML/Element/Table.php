@@ -48,8 +48,17 @@ class Table extends AbstractElement
                 $content .= '<tr>' . PHP_EOL;
                 foreach ($row->getCells() as $cell) {
                     $writer = new Container($this->parentWriter, $cell);
+                    $cellStyle = $cell->getStyle();
+                    $styles = [];
+                    $bgColor = $cellStyle->getBgColor();
+                    if ($bgColor != null)
+                    {
+
+                        $styles[] = "background-color:#".$bgColor;
+                    }
+                    $styleText = implode(";", $styles);
                     $cellTag = $tblHeader ? 'th' : 'td';
-                    $content .= "<{$cellTag}>" . PHP_EOL;
+                    $content .= "<{$cellTag} style = '$styleText'>" . PHP_EOL;
                     $content .= $writer->write();
                     $content .= "</{$cellTag}>" . PHP_EOL;
                 }
