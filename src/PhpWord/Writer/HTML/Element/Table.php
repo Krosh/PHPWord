@@ -37,7 +37,8 @@ class Table extends AbstractElement
 
         $tableStyle = $this->element->getStyle();
         $tableStyleProperties = [];
-        $tableStyleProperties[] = "border-width:".$tableStyle->getBorderSize()[0];
+        $borderSize = is_null($tableStyle->getBorderSize()[0]) ? 0 : $tableStyle->getBorderSize()[0];
+        $tableStyleProperties[] = "border-width:".$borderSize;
         $tableStyleAsText = implode(";", $tableStyleProperties);
         $content = '';
         $rows = $this->element->getRows();
