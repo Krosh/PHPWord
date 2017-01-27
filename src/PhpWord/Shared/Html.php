@@ -57,7 +57,7 @@ class Html
 
         // Load DOM
         $dom = new \DOMDocument();
-        $dom->preserveWhiteSpace = true;
+        $dom->preserveWhiteSpace = false;
         $dom->loadXML($html);
         $node = $dom->getElementsByTagName('body');
 
@@ -365,7 +365,9 @@ class Html
         if (count($cNodes) > 0) {
             $text = '';
             foreach ($cNodes as $cNode) {
-                if ($cNode->nodeName == '#text') {
+                if ($cNode->nodeName == '#text'  || $node->textContent == $cNode->textContent) {
+                    $text = $cNode->nodeValue;
+                }
                     $text = $cNode->nodeValue;
                 }
             }
