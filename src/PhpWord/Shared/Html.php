@@ -36,7 +36,7 @@ class Html
      * @param bool $fullHTML If it's a full HTML, no need to add 'body' tag
      * @return void
      */
-    public static function addHtml($element, $html, $fullHTML = false)
+    public static function addHtml($element, $html, $fullHTML = false, $styles = [])
     {
         /*
          * @todo parse $stylesheet for default styles.  Should result in an array based on id, class and element,
@@ -61,7 +61,7 @@ class Html
         $dom->loadXML($html);
         $node = $dom->getElementsByTagName('body');
 
-        self::parseNode($node->item(0), $element);
+        self::parseNode($node->item(0), $element, $styles);
     }
 
     /**
@@ -231,8 +231,7 @@ class Html
      */
     private static function parseHeading($element, &$styles, $argument1)
     {
-        $styles['paragraph'] = $argument1;
-        $newElement = $element->addTextRun($styles['paragraph']);
+        $newElement = $element->addTextRun($styles[$argument1]);
 
         return $newElement;
     }
@@ -247,12 +246,22 @@ class Html
      */
     private static function parseText($node, $element, &$styles)
     {
+        $parentLocalName = $node->parentNode->localName;
+        $styleName = "";
+        if ($parentLocalName == "h1")
+        {
+            $paragraphName = "Heading1";
+            $styleName = $paragraphName."Font";
+        }
         $styles['font'] = self::parseInlineStyle($node, $styles['font']);
 
         // Commented as source of bug #257. `method_exists` doesn't seems to work properly in this case.
         // @todo Find better error checking for this one
         // if (method_exists($element, 'addText')) {
+        if ($styleName == "")
             $element->addText($node->nodeValue, $styles['font'], $styles['paragraph']);
+        else
+            $element->addText($node->nodeValue, $styles[$styleName], $styles[$paragraphName]);
         // }
 
         return null;
