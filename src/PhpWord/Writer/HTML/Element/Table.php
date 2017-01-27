@@ -35,11 +35,15 @@ class Table extends AbstractElement
             return '';
         }
 
+        $tableStyle = $this->element->getStyle();
+        $tableStyleProperties = [];
+        $tableStyleProperties[] = "border-width:".$tableStyle->getBorderSize()[0];
+        $tableStyleAsText = implode(";", $tableStyleProperties);
         $content = '';
         $rows = $this->element->getRows();
         $rowCount = count($rows);
         if ($rowCount > 0) {
-            $content .= '<table>' . PHP_EOL;
+            $content .= '<table style = "'.$tableStyleAsText.'">' . PHP_EOL;
             foreach ($rows as $row) {
                 /** @var $row \PhpOffice\PhpWord\Element\Row Type hint */
                 $rowStyle = $row->getStyle();
@@ -56,6 +60,7 @@ class Table extends AbstractElement
 
                         $styles[] = "background-color:#".$bgColor;
                     }
+                    $styles = array_merge($styles, $tableStyleProperties);
                     $styleText = implode(";", $styles);
                     $cellTag = $tblHeader ? 'th' : 'td';
                     $content .= "<{$cellTag} style = '$styleText'>" . PHP_EOL;
