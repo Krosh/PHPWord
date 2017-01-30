@@ -368,8 +368,6 @@ class Html
                 if ($cNode->nodeName == '#text'  || $node->textContent == $cNode->textContent) {
                     $text = $cNode->nodeValue;
                 }
-                    $text = $cNode->nodeValue;
-                }
             }
             $element->addListItem($text, $data['listdepth'], $styles['font'], $styles['list'], $styles['paragraph']);
         }
