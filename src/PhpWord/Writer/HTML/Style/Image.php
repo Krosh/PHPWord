@@ -44,7 +44,7 @@ class Image extends AbstractStyle
       $css['height'] = $this->getValueIf(is_numeric($height), $height . 'px');
       if ($hpos != "left")
       {
-          $css["margin-top"] = -$height . 'px';
+    //      $css["margin-top"] = -$height . 'px';
           $css["float"] = $hpos;
       }
 
